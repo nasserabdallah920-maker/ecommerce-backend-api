@@ -17,14 +17,14 @@ app.use(
     credentials: true,
   }),
 );
-// app.use(
-//   rateLimit({
-//     windowMs: 15 * 60 * 1000,
-//     limit: 300,
-//     message: "Too many requests, please try again later",
-//     standardHeaders: true,
-//   }),
-// );
+app.use(
+  rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 300,
+    message: "Too many requests, please try again later",
+    standardHeaders: true,
+  }),
+);
 app.use(helmet({  crossOriginResourcePolicy: false,}));
 app.use(express.json());
 app.use(cookieParser());
