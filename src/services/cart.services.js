@@ -17,6 +17,7 @@ const addNewItem = async (userId, item) => {
     throw new AppError("This product is not available.", StatusCode.NOT_FOUND);
   }
 
+  
   if (item.quantity < 1) {
     throw new AppError(
       "The quantity must be greater than 0",
@@ -24,7 +25,7 @@ const addNewItem = async (userId, item) => {
     );
   }
   const cart = await cartRepositories.findCartByUserId(userId);
-
+  
   if (!cart) {
     const newCart = await cartRepositories.saveCart({ userId, items: [item] });
     return newCart;

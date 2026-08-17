@@ -34,5 +34,16 @@ const updateCategoryById = async (categoryID, newData) => {
   return category;
 };
 
+const addCategoryImageById = async (categoryID, newData) => {
+  const category = await Category.findByIdAndUpdate(
+    categoryID,
+    { image:  newData }  ,
+    {
+      returnDocument: "after",
+      runValidators: true,
+    },
+  );
+  return category;
+};
 
-module.exports={saveCategory,findCategoryById,findAllCategories,deleteCategoryById,updateCategoryById}
+module.exports={saveCategory,findCategoryById,findAllCategories,deleteCategoryById,updateCategoryById,addCategoryImageById}

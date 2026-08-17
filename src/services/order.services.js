@@ -23,20 +23,20 @@ const createOrder = async (id, information) => {
     price: e.product.price,
   }));
   const priceArray = orderItems.map((e) => e.product.price * e.quantity);
-  const totalPrice = priceArray.reduce((acc, cur) => {
-    return acc + cur;
-  }, 0);
+  const totalPrice =
+    priceArray.reduce((acc, cur) => {
+      return acc + cur;
+    }, 0) + Number(process.env.SHIPPING_PRICE);
 
   const order = {
     user: cart.userId,
     items,
     shippingAddress: information.shippingAddress,
-    paymentMethod: information.paymentMethod,
-    totalPrice,
+    shipping: Number(process.env.SHIPPING_PRICE),
+    totalPrice: totalPrice,
     finalPrice: totalPrice,
     couponCode: information.coupon || null,
   };
-
 
   for (const item of orderItems) {
     if (item.product.stock < item.quantity) {
@@ -47,9 +47,9 @@ const createOrder = async (id, information) => {
     }
   }
 
-
   const couponCode = information.coupon;
   let coupon = null;
+
   if (couponCode) {
     coupon = await couponRepositories.findCouponByCode(couponCode);
     if (!coupon) {
@@ -71,45 +71,43 @@ const createOrder = async (id, information) => {
     }
     const finalPrice = calculateDiscount(totalPrice, coupon);
     order.finalPrice = finalPrice;
+    order.discount =  order.totalPrice -finalPrice ;
   }
 
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
 
-
     if (coupon) {
       const updatedCoupon = await couponRepositories.incrementUsedCount(
         coupon._id,
-        session
+        session,
       );
       if (!updatedCoupon) {
         throw new AppError(
           "This coupon has reached its usage limit",
-          StatusCode.BAD_REQUEST
+          StatusCode.BAD_REQUEST,
         );
       }
     }
-
     const savedOrder = await orderRepositories.saveOrder(order, session);
-
 
     for (const item of orderItems) {
       const updatedProduct = await productRepositories.decrementStock(
         item.product._id,
         item.quantity,
-        session
+        session,
       );
       if (!updatedProduct) {
         throw new AppError(
           `Insufficient stock for product: ${item.product.title}`,
-          StatusCode.BAD_REQUEST
+          StatusCode.BAD_REQUEST,
         );
       }
     }
 
     await cartRepositories.deleteAllItems(id, session);
-
+    
     await session.commitTransaction();
     return savedOrder;
   } catch (err) {
@@ -142,6 +140,7 @@ const getUserOrdersById = async (userId) => {
   return orders;
 };
 const changeOrderStatus = async (orderId, status) => {
+  
   const order = await orderRepositories.orderStatus(orderId, status);
   if (!order) {
     throw new AppError(
@@ -162,40 +161,36 @@ const getAllOrders = async () => {
   return orders;
 };
 
-
 const cancelUserOrder = async (orderId, userId) => {
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
 
-
     const updatedOrder = await orderRepositories.cancelOrder(
       orderId,
       userId,
-      session
+      session,
     );
 
     if (!updatedOrder) {
       throw new AppError(
         "Order not found or cannot be cancelled (already shipped, delivered, or cancelled).",
-        StatusCode.BAD_REQUEST
+        StatusCode.BAD_REQUEST,
       );
     }
-
 
     for (const item of updatedOrder.items) {
       await productRepositories.incrementStock(
         item.product,
         item.quantity,
-        session
+        session,
       );
     }
-
 
     if (updatedOrder.couponCode) {
       await couponRepositories.decrementUsedCount(
         updatedOrder.couponCode,
-        session
+        session,
       );
     }
 
@@ -209,6 +204,35 @@ const cancelUserOrder = async (orderId, userId) => {
   }
 };
 
+const confirmCashOrder = async (orderId, userId) => {
+  const updatedOrder = await orderRepositories.confirmCashOrder(
+    orderId,
+    userId,
+  );
+
+  if (!updatedOrder) {
+    throw new AppError(
+      "Order not found or cannot be confirmed.",
+      StatusCode.BAD_REQUEST,
+    );
+  }
+
+  return updatedOrder;
+};
+
+const getLastPaidOrder = async (userId,paymobId) => {
+
+  
+  const order = await orderRepositories.findLastPaidOrder(userId,paymobId);
+  if (!order) {
+    throw new AppError(
+      "No paid order found for this user.",
+      StatusCode.NOT_FOUND,
+    );
+  }
+  return order;
+};
+
 module.exports = {
   createOrder,
   getOrderById,
@@ -217,4 +241,6 @@ module.exports = {
   changeOrderStatus,
   getAllOrders,
   cancelUserOrder,
+  confirmCashOrder,
+  getLastPaidOrder,
 };

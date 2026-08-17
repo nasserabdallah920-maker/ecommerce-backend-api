@@ -31,4 +31,10 @@ const deleteUser = async (req, res, next) => {
   res.status(StatusCode.NO_CONTENT).send()
 };
 
-module.exports = { getUser, deleteUser, getAllUsers,searchForUser}
+const blockUser = async (req, res, next) => {
+  const {id} = req.params;
+  const updatedUser = await adminUsersServices.blockUser(id);
+  res.status(StatusCode.OK).json({ success: Status.SUCCESS, data: updatedUser });
+};
+
+module.exports = { getUser, deleteUser, getAllUsers, searchForUser, blockUser };

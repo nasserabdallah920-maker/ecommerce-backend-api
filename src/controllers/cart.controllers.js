@@ -10,16 +10,15 @@ const getCart = async (req, res, next) => {
 };
 const updateItems = async (req, res, next) => {
   const id = req.user.id;
-  const { item} = req.body;
-  
+  const {item} = req.body;
   const cart = await cartServices.addNewItem(id, item);
+
   res.status(StatusCode.OK).json({ success: Status.SUCCESS, data: { cart } });
 };
 const updateQuantity = async (req, res, next) => {
   const id = req.user.id;
   const productId = req.params.productId;
-  const {quantity} = req.query;
-
+  const {quantity} = req.query;  
   const cart = await cartServices.addNewQuantity(id, productId, quantity);
   res.status(StatusCode.OK).json({ success: Status.SUCCESS, data: { cart } });
 };

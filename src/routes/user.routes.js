@@ -11,4 +11,8 @@ Router.delete("/delete/me",asyncWrapper(userControllers.deleteUser));
 Router.patch("/update/information/me",validate(userInformationValidate),asyncWrapper(userControllers.changeUserInformation));
 Router.patch("/update/password/me",validate(changePasswordValidate),asyncWrapper(userControllers.changeUserPassword));
 
+Router.post("/wishlist/:productId",asyncWrapper(userControllers.addToWishlist));
+Router.delete("/wishlist/:productId",asyncWrapper(userControllers.removeFromWishlist));
+Router.get("/wishlist",asyncWrapper(userControllers.getWishlist));
+
 module.exports = Router

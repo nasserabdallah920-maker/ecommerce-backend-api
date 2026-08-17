@@ -22,8 +22,9 @@ const getProductById = async (id) => {
   }
   return product;
 };
-const searchProducts = async (filters) => {
-  const products = await productRepositories.findProductBySearch(filters);
+const searchProducts = async (search) => {
+
+  const products = await productRepositories.findProductBySearch(search);
   if (!products) {
     throw new AppError(
       "No product was found in this search.",

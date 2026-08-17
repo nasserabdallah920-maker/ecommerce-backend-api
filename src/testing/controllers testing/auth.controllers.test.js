@@ -57,6 +57,7 @@ describe("test auth controllers", () => {
     it("should successfully login", async () => {
       req.body = { email: "test@test.com", password: "password" };
       const mockResult = {
+        user: { userId: "1", firstName: "Test", role: "user" },
         accessToken: "access",
         refreshToken: "refresh",
       };
@@ -69,6 +70,7 @@ describe("test auth controllers", () => {
       expect(res.status).toHaveBeenCalledWith(StatusCode.OK);
       expect(res.json).toHaveBeenCalledWith({
         success: Status.SUCCESS,
+        user: mockResult.user,
         accessToken: mockResult.accessToken,
       });
     });

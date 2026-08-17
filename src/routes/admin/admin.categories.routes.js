@@ -11,5 +11,6 @@ Router.use(protect,adminOnly)
 Router.post("/create",uploads.single("image"),validate(createCategorySchema),asyncWrapper(adminCategoriesControllers.createCategory))
 Router.delete("/delete/:id", asyncWrapper(adminCategoriesControllers.deleteCategory))
 Router.patch("/update/information/:id",validate(updateCategorySchema),asyncWrapper(adminCategoriesControllers.changeCategoryInformation))
+Router.patch("/update/image/:id",uploads.single('image'), asyncWrapper(adminCategoriesControllers.addProductImage));
 
 module.exports = Router;

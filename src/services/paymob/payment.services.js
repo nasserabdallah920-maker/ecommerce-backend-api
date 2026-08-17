@@ -10,9 +10,10 @@ const authenticate = async () => {
   return response.data.token;
 };
 const createOrder = async (token, order) => {
+
   const response = await paymob.post("/ecommerce/orders", {
     auth_token: token,
-    amount_cents: order.finalPrice * 100,
+    amount_cents:   Math.round(order.finalPrice*100),
     currency: "EGP",
   });
 
@@ -22,7 +23,7 @@ const getPaymentKey = async (token, order, paymob_order_id) => {
   try {
     const response = await paymob.post("/acceptance/payment_keys", {
       auth_token: token,
-      amount_cents: order.finalPrice * 100,
+      amount_cents:  Math.round(order.finalPrice*100),
       currency: "EGP",
       integration_id: process.env.INTEGRATION_ID,
       order_id: paymob_order_id,
@@ -57,16 +58,7 @@ const paymentOrder = async (orderId) => {
   const order = await orderRepositories.findOrderById(orderId);
   if (!order) {
     throw new AppError("There is no order with this ID.", StatusCode.NOT_FOUND);
-  }
-
-
-  if (order.paymob_id) {
-    throw new AppError(
-      "Payment has already been initiated for this order.",
-      StatusCode.BAD_REQUEST
-    );
-  }
-
+  } 
   if (order.paymentStatus === "paid") {
     throw new AppError(
       "This order has already been paid.",
@@ -85,6 +77,11 @@ const paymentOrder = async (orderId) => {
   const paymob_order_id = await createOrder(token, order);
   const payment_key = await getPaymentKey(token, order, paymob_order_id);
   const url = buildIframeUrl(payment_key);
+
+  if (order.paymob_id) {
+    return url
+  }
+
 
 
   const updatedOrder = await orderRepositories.setPaymobId(

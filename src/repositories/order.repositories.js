@@ -7,12 +7,12 @@ const saveOrder = async (order, session) => {
 };
 
 const findOrdersForUser = async (userId) => {
-  const orders = await Order.find({ userId });
+  const orders = await Order.find({ user:userId });
   return orders;
 };
 
 const findUserOrder = async (orderId, userId) => {
-  const orders = await Order.findOne({ _id: orderId, userId });
+  const orders = await Order.findOne({ _id: orderId, user:userId });
   return orders;
 };
 
@@ -74,6 +74,30 @@ const setPaymobId = async (orderId, paymobId) => {
   return order;
 };
 
+const confirmCashOrder = async (orderId, userId, session) => {
+  const order = await Order.findOneAndUpdate(
+    {
+      _id: orderId,
+      user: userId,
+      orderStatus: "pending"
+    },
+    { 
+      paymentMethod: "cash", 
+      orderStatus: "confirmed" 
+    },
+    { returnDocument: "after", runValidators: true, session }
+  );
+  return order;
+};
+
+const findLastPaidOrder = async (userId,paymobId) => {
+  const order = await Order.find({
+    user: userId,
+    paymob_id:paymobId
+  });
+  return order;
+};
+
 module.exports = {
   saveOrder,
   findOrderById,
@@ -85,4 +109,6 @@ module.exports = {
   paidOrder,
   cancelOrder,
   setPaymobId,
+  confirmCashOrder,
+  findLastPaidOrder,
 };

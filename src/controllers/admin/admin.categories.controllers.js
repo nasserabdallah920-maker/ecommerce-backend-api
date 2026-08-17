@@ -34,5 +34,15 @@ const changeCategoryInformation = async (req, res, next) => {
     .status(StatusCode.OK)
     .json({ success: Status.SUCCESS, data: { category: change } });
 };
+const addProductImage = async (req, res, next) => {
+  const categoryId = req.params.id;
+  const file = req.file;
+  const arr = `/uploads/${file.filename}`;
 
-module.exports = { createCategory, deleteCategory, changeCategoryInformation };
+  const change = await adminCategoriesServices.updateCategoryImages(categoryId, arr);
+
+  res
+    .status(StatusCode.OK)
+    .json({ success: Status.SUCCESS, data: { category: change } });
+};
+module.exports = { createCategory, deleteCategory, changeCategoryInformation ,addProductImage};

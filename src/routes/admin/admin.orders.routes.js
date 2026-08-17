@@ -9,6 +9,7 @@ const { updateOrderStatusSchema } = require("../../validators/order.validators")
 Router.use(protect,adminOnly)
 Router.patch('/status/:orderId', validate(updateOrderStatusSchema), asyncWrapper(adminOrdersControllers.changeOrderStatus))
 Router.get('/',asyncWrapper(adminOrdersControllers.getAllOrders))
+Router.get('/user/:id', asyncWrapper(adminOrdersControllers.getUserOrders))
 Router.get('/:orderId',asyncWrapper(adminOrdersControllers.getOneOrder))
 
 

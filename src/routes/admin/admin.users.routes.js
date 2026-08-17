@@ -9,7 +9,9 @@ const { protect } = require("../../middlewares/auth.middleware");
 Router.use(protect, adminOnly);
 Router.get("/get/:id", asyncWrapper(adminUsersControllers.getUser));
 Router.get("/getall", asyncWrapper(adminUsersControllers.getAllUsers));
-Router.get("/search/user", asyncWrapper(adminUsersControllers.searchForUser));
-Router.delete("/delete/user/:id", asyncWrapper(adminUsersControllers.deleteUser));
+Router.get("/search", asyncWrapper(adminUsersControllers.searchForUser));
+Router.delete("/delete/:id", asyncWrapper(adminUsersControllers.deleteUser));
+Router.patch("/block/:id", asyncWrapper(adminUsersControllers.blockUser));
+
 
 module.exports = Router;

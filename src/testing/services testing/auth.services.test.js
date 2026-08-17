@@ -28,12 +28,14 @@ describe("test auth services", () => {
 
   describe("addUser service", () => {
     it("successfully add", async () => {
+      userRepositories.findUserByEmail.mockResolvedValue(null);
       userRepositories.saveUser.mockResolvedValue(mockUser);
       createTokens.mockReturnValue(tokens);
       userRepositories.updateUserById.mockResolvedValue();
 
       const result = await authServices.addUser(mockUser);
 
+      expect(userRepositories.findUserByEmail).toHaveBeenCalledWith(mockUser.email);
       expect(userRepositories.saveUser).toHaveBeenCalled();
       expect(createTokens).toHaveBeenCalled();
       expect(userRepositories.updateUserById).toHaveBeenCalledWith(mockUser._id, { refreshToken: tokens.refreshToken });
@@ -46,6 +48,14 @@ describe("test auth services", () => {
         accessToken: tokens.accessToken,
         refreshToken: tokens.refreshToken,
       });
+    });
+
+    it("throws AppError if email already exists", async () => {
+      userRepositories.findUserByEmail.mockResolvedValue(mockUser);
+
+      await expect(authServices.addUser(mockUser)).rejects.toThrow(AppError);
+      expect(userRepositories.findUserByEmail).toHaveBeenCalledWith(mockUser.email);
+      expect(userRepositories.saveUser).not.toHaveBeenCalled();
     });
   });
 
@@ -62,7 +72,15 @@ describe("test auth services", () => {
       expect(verifyPassword).toHaveBeenCalledWith("password123", mockUser.password);
       expect(createTokens).toHaveBeenCalled();
       expect(userRepositories.updateUserById).toHaveBeenCalledWith(mockUser._id, { refreshToken: tokens.refreshToken });
-      expect(result).toEqual({ accessToken: tokens.accessToken, refreshToken: tokens.refreshToken });
+      expect(result).toEqual({
+        user: {
+          userId: mockUser._id,
+          firstName: mockUser.firstName,
+          role: mockUser.role,
+        },
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+      });
     });
 
     it("throws AppError on incorrect email", async () => {

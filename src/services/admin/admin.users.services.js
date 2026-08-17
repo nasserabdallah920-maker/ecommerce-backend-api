@@ -10,6 +10,17 @@ const getUserById = async (params) => {
   }
   return user;
 };
+const blockUser=async(id)=>{
+  const user = await repo.findUserById(id)
+    if (!user) {
+    throw new AppError("This user does not exist", StatusCode.NOT_FOUND);
+  }
+    if (user.role === "admin") {
+    throw new AppError("You cannot block another admin", StatusCode.FORBIDDEN);
+  }
+  const update = await repo.updateUserById(id,{isBlocked:!user.isBlocked})
+  return update
+}
 const getAll = async (query) => {
   const sort = query.sort;
   const page = query.page || 1;
@@ -22,9 +33,9 @@ const getAll = async (query) => {
 };
 
 const userSearch = async (query) => {
-  const { firstName, lastName, email } = query;
+  const { search } = query;
 
-  const users = await repo.findUserBySearch({ firstName, lastName, email });
+  const users = await repo.findUserBySearch(search);
   if (!users || users.length === 0) {
     throw new AppError(
       "No users found matching the search criteria",
@@ -47,4 +58,4 @@ const removeUser = async (params) => {
   return;
 };
 
-module.exports = { getUserById, removeUser, getAll, userSearch };
+module.exports = { getUserById, removeUser, getAll, userSearch,blockUser };

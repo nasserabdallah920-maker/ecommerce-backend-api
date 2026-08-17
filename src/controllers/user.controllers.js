@@ -31,4 +31,25 @@ const changeUserPassword = async (req, res, next) => {
     .status(StatusCode.OK)
     .json({ success: Status.SUCCESS, data: { user: change } });
 };
-module.exports = { getUser, deleteUser, changeUserPassword,changeUserInformation };
+
+const addToWishlist = async (req, res, next) => {
+  const userId = req.user.id;
+  const { productId } = req.params;
+  const wishlist = await userServices.addToWishlist(userId, productId);
+  res.status(StatusCode.OK).json({ success: Status.SUCCESS, data: { wishlist } });
+};
+
+const removeFromWishlist = async (req, res, next) => {
+  const userId = req.user.id;
+  const { productId } = req.params;
+  const wishlist = await userServices.removeFromWishlist(userId, productId);
+  res.status(StatusCode.OK).json({ success: Status.SUCCESS, data: { wishlist } });
+};
+
+const getWishlist = async (req, res, next) => {
+  const userId = req.user.id;
+  const wishlist = await userServices.getWishlist(userId);
+  res.status(StatusCode.OK).json({ success: Status.SUCCESS, data: { wishlist } });
+};
+
+module.exports = { getUser, deleteUser, changeUserPassword,changeUserInformation, addToWishlist, removeFromWishlist, getWishlist };

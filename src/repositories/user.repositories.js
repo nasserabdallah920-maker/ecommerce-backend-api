@@ -39,17 +39,14 @@ const findAllUsers = async (page, limit, sort) => {
 };
 
 const findUserBySearch = async (search) => {
-  const query = {};
-  if (search.firstName) {
-    query.firstName = { $regex: search.firstName, $options: "i" };
-  }
-  if (search.lastName) {
-    query.lastName = { $regex: search.lastName, $options: "i" };
-  }
-  if (search.email) {
-    query.email = { $regex: search.email, $options: "i" };
-  }
-  const users = await User.find(query).select("-password -refreshToken -__v");
+  const users = await User.find({
+    $or: [
+      { firstName: { $regex: search, $options: "i" } },
+      { lastName: { $regex: search, $options: "i" } },
+      { email: { $regex: search, $options: "i" } },
+    ],
+  }).select("-password -refreshToken -__v");
+
   return users;
 };
 
@@ -66,6 +63,29 @@ const updateUserById = async (userID, newData) => {
   return user;
 };
 
+const addToWishlist = async (userId, productId) => {
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { $addToSet: { wishlist: productId } },
+    { returnDocument: "after" }
+  ).populate("wishlist");
+  return user;
+};
+
+const removeFromWishlist = async (userId, productId) => {
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { $pull: { wishlist: productId } },
+    { returnDocument: "after" }
+  ).populate("wishlist");
+  return user;
+};
+
+const getWishlist = async (userId) => {
+  const user = await User.findById(userId).populate("wishlist");
+  return user ? user.wishlist : null;
+};
+
 module.exports = {
   saveUser,
   findUserById,
@@ -73,5 +93,8 @@ module.exports = {
   findAllUsers,
   findUserBySearch,
   deleteUserById,
-  updateUserById,findRefreshTokenByUserId
+  updateUserById,findRefreshTokenByUserId,
+  addToWishlist,
+  removeFromWishlist,
+  getWishlist
 };

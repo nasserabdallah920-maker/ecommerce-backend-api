@@ -54,9 +54,31 @@ const changeUserPassword = async (userId, body) => {
   });
   return update;
 };
+
+const addToWishlist = async (userId, productId) => {
+  const user = await userRepository.addToWishlist(userId, productId);
+  return user.wishlist;
+};
+
+const removeFromWishlist = async (userId, productId) => {
+  const user = await userRepository.removeFromWishlist(userId, productId);
+  return user.wishlist;
+};
+
+const getWishlist = async (userId) => {
+  const wishlist = await userRepository.getWishlist(userId);
+  if (!wishlist) {
+    throw new AppError("This user does not exist", StatusCode.NOT_FOUND);
+  }
+  return wishlist;
+};
+
 module.exports = {
   getUserById,
   removeUserById,
   changeUserInformation,
   changeUserPassword,
+  addToWishlist,
+  removeFromWishlist,
+  getWishlist,
 };

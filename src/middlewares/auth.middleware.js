@@ -6,12 +6,14 @@ const User = require("../models/user.model");
 
 const protect =asyncWrapper( async (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
+
   if (!token) {
     return next(
       new AppError("The token was not found", StatusCode.UNAUTHORIZED),
     );
   }
   const payload = await verifyAccessToken(token);
+
 
   const user = await User.findById(payload.id);
   if (!user) {

@@ -46,7 +46,6 @@ const updateQuantity = async (userId, productID, newQuantity) => {
       runValidators: true,
     },
   );
-
   return cart;
 };
 

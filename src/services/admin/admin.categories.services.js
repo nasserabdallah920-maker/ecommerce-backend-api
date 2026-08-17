@@ -43,5 +43,8 @@ const updateCategoryInformation = async (categoryId, body) => {
   );
   return update;
 };
-
-module.exports={addCategory,removeCategoryById,updateCategoryInformation}
+const updateCategoryImages = async (id, newphotos) => {
+  const update = await categoryRepositories.addCategoryImageById(id, newphotos);
+  return update;
+};
+module.exports={addCategory,removeCategoryById,updateCategoryInformation,updateCategoryImages}

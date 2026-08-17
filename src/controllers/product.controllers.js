@@ -14,15 +14,11 @@ const getProductById = async (req, res, next) => {
 };
 
 const searchProducts = async (req, res, next) => {
-  const { title, description, price } = req.query;
-  if (!(title || description || price)) {
+  const { search } = req.query;
+  if (!search) {
     throw new AppError("Search query missing", StatusCode.BAD_REQUEST);
   }
-  const results = await productServices.searchProducts({
-    title,
-    description,
-    price,
-  });
+  const results = await productServices.searchProducts(search);
   res.status(StatusCode.OK).json({ success: Status.SUCCESS, data: results });
 };
 

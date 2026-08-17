@@ -11,18 +11,22 @@ const adminOrdersRouter = require("./admin/admin.orders.routes");
 const adminCouponsRouter = require("./admin/admin.coupons.routes");
 const cartRouter = require("./cart.routes");
 const orderRouter = require("./order.routes");
-const paymobRouter = require("./paymob.routes")
+const paymobRouter = require("./paymob.routes");
+const couponRouter = require("./coupon.routes");
+const adminDashboardRouter = require("./admin/admin.dashboard.routes");
 Router.use("/users", userRouter);
 Router.use("/products", productRouter);
 Router.use("/categories", categoryRouter);
 Router.use("/cart", cartRouter);
 Router.use("/auth", authRouter);
 Router.use("/order", orderRouter);
+Router.use("/coupons", couponRouter);
 Router.use("/admin/orders", adminOrdersRouter);
 Router.use("/admin/coupons", adminCouponsRouter);
 Router.use("/admin/users", adminUsersRouter);
 Router.use("/admin/products", adminProductsRouter);
 Router.use("/admin/categories", adminCategoriesRouter);
 Router.use('/paymob',paymobRouter)
+Router.use('/admin/dashboard', adminDashboardRouter)
 
 module.exports = Router;

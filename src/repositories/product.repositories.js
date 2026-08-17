@@ -36,22 +36,18 @@ const findAllProducts = async (page, limit, sort) => {
     .limit(limit);
   return products;
 };
+const findProductBySearch = async (search) => {
 
-const findProductBySearch = async ({ title, description, price }) => {
-  const query = {};
-  if (title) {
-    query.title = { $regex: title, $options: "i" };
-  }
-  if (description) {
-    query.description = { $regex: description, $options: "i" };
-  }
-  if (price) {
-    query.price = Number(price);
-  }
-  const products = await Product.find(query);
+  if (!search) return [];
+  const products = await Product.find({
+    $or: [
+      { title: { $regex: search, $options: "i" } },
+      { description: { $regex: search, $options: "i" } },
+    ],
+  });
+
   return products;
 };
-
 const deleteProductById = async (productID) => {
   await Product.deleteOne({ _id: productID });
   return;

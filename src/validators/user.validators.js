@@ -17,6 +17,7 @@ const userInformationValidate = z
     firstName: z.string().min(3).optional(),
     lastName: z.string().min(3).optional(),
     email: z.string().email().optional(),
+    phoneNumber: z.string().optional(),
   })
   .strict();
 

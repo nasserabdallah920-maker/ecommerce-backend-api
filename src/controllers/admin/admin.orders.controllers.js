@@ -17,5 +17,9 @@ const getOneOrder=async(req,res,next)=>{
   const order = await adminOrderServices.getOrderById(orderId)
    res.status(StatusCode.OK).json({success:Status.SUCCESS,data:order}) 
 }
-
-module.exports = { changeOrderStatus,getAllOrders,getOneOrder };
+const getUserOrders=async(req,res,next)=>{
+  const {id} =req.params
+  const orders = await orderServices.getUserOrdersById(id)
+   res.status(StatusCode.OK).json({success:Status.SUCCESS,data:orders}) 
+}
+module.exports = { changeOrderStatus, getAllOrders, getOneOrder,getUserOrders };

@@ -8,6 +8,7 @@ const adminOrdersControllers = require("./admin/admin.orders.controllers");
 const adminCouponsControllers = require("./admin/admin.coupons.controllers");
 const cartControllers = require("./cart.controllers");
 const orderControllers = require("./order.controllers");
+const adminDashboardControllers = require("./admin/admin.dashboard.controllers");
 const controllers = {
   authControllers,
   userControllers,
@@ -19,5 +20,6 @@ const controllers = {
   orderControllers,
   adminOrdersControllers,
   adminCouponsControllers,
+  adminDashboardControllers,
 };
 module.exports = controllers;

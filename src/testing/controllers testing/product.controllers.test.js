@@ -29,7 +29,6 @@ describe("Product Controllers", () => {
     it("should get all products", async () => {
       req.query = { page: 1, limit: 10, sort: "desc" };
       productServices.getAllProducts.mockResolvedValue([]);
-      
       await getAllProducts(req, res, next);
       expect(productServices.getAllProducts).toHaveBeenCalledWith(1, 10, "desc");
       expect(res.status).toHaveBeenCalledWith(StatusCode.OK);
@@ -40,7 +39,6 @@ describe("Product Controllers", () => {
     it("should get product by id", async () => {
       req.params = { id: "prod_1" };
       productServices.getProductById.mockResolvedValue({});
-      
       await getProductById(req, res, next);
       expect(productServices.getProductById).toHaveBeenCalledWith("prod_1");
       expect(res.status).toHaveBeenCalledWith(StatusCode.OK);

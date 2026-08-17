@@ -7,6 +7,12 @@ const { StatusCode } = require("../utils/status");
 
 const addUser = async (body) => {
   const { firstName, lastName, email, password, phoneNumber } = body;
+
+  const existingUser = await repo.findUserByEmail(email);
+  if (existingUser) {
+    throw new AppError("Email already exists", StatusCode.CONFLICT);
+  }
+
   const newUser = { firstName, lastName, email, password, phoneNumber };
   const user = await repo.saveUser(newUser);
   const payload = createPayload(user);
@@ -39,7 +45,11 @@ const userLogin = async ( email, password) => {
 
   await repo.updateUserById(user._id, { refreshToken: tokens.refreshToken });
 
-  return { accessToken: tokens.accessToken, refreshToken: tokens.refreshToken };
+  return { 
+    user: { userId: user._id, firstName: user.firstName, role: user.role },
+    accessToken: tokens.accessToken, 
+    refreshToken: tokens.refreshToken 
+  };
 };
 
 const userLogOut = async (id) => {
@@ -50,16 +60,17 @@ const userLogOut = async (id) => {
 
 const newAccessToken = async (refreshToken) => {
   const verify = await verifyRefreshToken(refreshToken);
+  if(!verify){
+    throw new AppError('Session expired',StatusCode.UNAUTHORIZED)
+  }
   const userRefreshToken = await repo.findRefreshTokenByUserId(verify.id);
-
 
   if (!userRefreshToken || userRefreshToken !== refreshToken) {
     throw new AppError("Mismatched token", StatusCode.UNAUTHORIZED);
   }
-
   const payload = { id: verify.id, role: verify.role };
   const tokens = await createTokens(payload);
-  return { accessToken: tokens.accessToken };
+  return { accessToken: tokens.accessToken ,user:{userId:verify.id,role:verify.role}};
 };
 
 module.exports = { userLogin, addUser, userLogOut, newAccessToken };

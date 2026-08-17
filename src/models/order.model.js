@@ -47,8 +47,8 @@ const orderSchema = new mongoose.Schema(
 
     paymentMethod: {
       type: String,
-      enum: ["cash", "card"],
-      required: true,
+      enum: ["cash", "card", "pending"],
+      default: "pending",
     },
 
     paymentStatus: {
@@ -69,12 +69,15 @@ const orderSchema = new mongoose.Schema(
       ],
       default: "pending",
     },
-    paymob_id: { type: Number ,default:null},
+    paymob_id: { type: Number, default: null },
+
+    shipping: { type: Number, default: 0 },
 
     totalPrice: {
       type: Number,
       required: true,
     },
+    discount: { type: Number, required: true, default: 0 },
     finalPrice: {
       type: Number,
       required: true,

@@ -2,11 +2,9 @@ const { z } = require("zod");
 
 const createOrderSchema = z.object({
   shippingAddress: z.object({
-    city: z.string(),
-    street: z.string(),
-    phone: z.string(),
-  }),
-  paymentMethod: z.enum(["cash", "card"]),
+    city: z.string().min(3),
+    street: z.string().min(3),
+    phone: z.string().min(11,'must at least 11')}),
   coupon: z.string().optional().nullable(),
 });
 
